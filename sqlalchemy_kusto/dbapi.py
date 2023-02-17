@@ -1,4 +1,5 @@
 from collections import namedtuple
+from datetime import datetime
 from typing import Any, List, Optional, Tuple
 
 from azure.kusto.data import ClientRequestProperties, KustoClient, KustoConnectionStringBuilder
@@ -281,13 +282,16 @@ class Cursor:
 
         if value == "*":
             return value
-        if isinstance(value, str):
+        elif isinstance(value, str):
             return "'{}'".format(value.replace("'", "''"))
-        if isinstance(value, bool):
+        elif isinstance(value, bool):
             return "TRUE" if value else "FALSE"
-        if isinstance(value, (int, float)):
+        elif isinstance(value, (int, float)):
             return str(value)
-        if isinstance(value, (list, tuple)):
+        elif isinstance(value, (list, tuple)):
             return ", ".join(Cursor._escape(element) for element in value)
+        elif isinstance(value, datetime):
+            value = value.isoformat()
+            return "'{}'".format(value)
 
         return value
